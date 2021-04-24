@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9b06f0fc-32fd-4cac-a860-645ed3d9fa37" basePath="/tickets/{PNR}" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="check-in-by-pnr-papi" doc:id="456f53c9-1922-40ab-b233-bf8ad89eb4ca" >
+		<http:listener doc:name="PUT /checkin" doc:id="a21e0674-e97b-4e38-a20b-fb4fe57e7b82" config-ref="HTTP_Listener_config" path="/checkin" allowedMethods="PUT">
+			<http:response >
+				<http:body ><![CDATA[#[output application/json --- payload]]]></http:body>
+			</http:response>
+		</http:listener>
+		<set-variable value="#[message.attributes.uriParams.'PNR']" doc:name="PNR" doc:id="55e84d2e-3dd6-4bb7-bca1-fe03ab425403" variableName="PNR"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9d9033ab-d3df-4f5a-8963-85085ca1a6b6" message="#[output application/json ---&#10;&#10;{&#10;	greeting: 'Hello Mr. ' ++ message.payload.'lastName' as String&#10;				++ ': Your Record Locator is: ' ++ vars.PNR as String&#10;}]"/>
+		<ee:transform doc:name="Transform Message" doc:id="7b5a01c8-f5cb-46f1-a871-550f4c73b214" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+    "paymentID": "PAY-1AKD7482FAB9STATKO"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
