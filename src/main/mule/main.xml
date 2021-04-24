@@ -16,13 +16,37 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		</http:listener>
 		<set-variable value="#[message.attributes.uriParams.'PNR']" doc:name="PNR" doc:id="55e84d2e-3dd6-4bb7-bca1-fe03ab425403" variableName="PNR"/>
 		<logger level="INFO" doc:name="Logger" doc:id="9d9033ab-d3df-4f5a-8963-85085ca1a6b6" message="#[output application/json ---&#10;&#10;{&#10;	greeting: 'Hello Mr. ' ++ message.payload.'lastName' as String&#10;				++ ': Your Record Locator is: ' ++ vars.PNR as String&#10;}]"/>
-		<ee:transform doc:name="Transform Message" doc:id="7b5a01c8-f5cb-46f1-a871-550f4c73b214" >
+		<flow-ref doc:name="flights-management-sapi" doc:id="6da80293-d4fb-4d41-a982-3ad701b51074" name="flights-management-sapi"/>
+		<flow-ref doc:name="register-passenger-data-sapi" doc:id="687efa14-7dff-40bb-8b5f-f74bf50258d5" name="register-passenger-data-sapi"/>
+		<flow-ref doc:name="create-payment-for-bags-sapi" doc:id="a9e115dc-24f8-42e7-b2dc-6c808f8edebb" name="create-payment-for-bags-sapi" />
+		<ee:transform doc:name="Transform Message" doc:id="7b5a01c8-f5cb-46f1-a871-550f4c73b214">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+    "paymentID": "PAY-1AKD7482FAB9STATKO"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="flights-management-sapi" doc:id="448e6fe3-9d8c-4a2b-a973-a2b7acccded4" >
+		<logger level="INFO" doc:name="Logger" doc:id="94838082-af0d-40cd-8211-7628befee1d7" />
+	</flow>
+	<flow name="register-passenger-data-sapi" doc:id="5973e208-36af-4448-b0e9-9327feb7fa46" >
+		<logger level="INFO" doc:name="Logger" doc:id="71dd5d9d-c4b4-44d3-bc2a-8c959fd611e2" />
+	</flow>
+	<flow name="create-payment-for-bags-sapi" doc:id="98dcc011-fa4d-4a0b-a870-5fad3a92da90" >
+		<logger level="INFO" doc:name="Logger" doc:id="46096388-8817-4da4-827f-d4c65843085a" />
+		<http:request method="GET" doc:name="fakeRequest" doc:id="5e9c55dc-c689-4f8e-9e40-33aa43b9d2ce" url="http://www.mulesoft.com"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8db704ba-9793-461b-b3d4-2a84b2a144fc" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="1fae9694-89e8-4d14-b25c-72be844e7e6d" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
 {
-    "paymentID": "PAY-1AKD7482FAB9STATKO"
+	status: 'PAID'
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
