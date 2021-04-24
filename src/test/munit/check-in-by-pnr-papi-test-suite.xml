@@ -37,6 +37,17 @@
 					<munit-tools:attributes value="#[{status: 200}]" />
 				</munit-tools:then-return>
 			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="69f52488-b660-4526-bcd9-f1e5db735bd4" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="create-payment-for-bags-sapi" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-equals doc:name="Assert equals" doc:id="d7e42906-1e6c-4e28-ad9a-fd680b2e5795" actual="#[vars.PNR]" expected="#['P1234']"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-that doc:name="Assert that" doc:id="bb0c45a4-c6cb-4da1-b310-c6e85c4a7883" message="#['AFTER SPY FAILED: Expected payment status to be PAID, but found ' ++ payload.status as String]" expression="#[payload.status]" is="#[MunitTools::equalTo('PAID')]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
 		</munit:behavior>
 		<munit:execution>
 			<munit:set-event doc:name="Set Event" doc:id="b408ce30-4118-4962-814c-aac77a7e0a4c" >
